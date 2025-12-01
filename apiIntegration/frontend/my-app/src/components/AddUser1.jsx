@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
 const AddUser1 = () => {
 
@@ -11,33 +11,41 @@ const AddUser1 = () => {
     useEffect(() => {
 
         let cancelled = false;
-
-        const fetchUsers = async () => {
-
+        const fetchApi = async () => {
             try {
                 setLoading(true);
                 setError(null);
-
                 const res = await fetch(API);
                 if (!res.ok) {
-                    throw new Error(`Server Error: ${res.status}`);
+                    throw new Error(`Server Error: ${res.status}`)
                 }
-                const data = await res.json()
+                const data = await res.json();
                 if (!cancelled) setUsers(data);
-
             } catch (err) {
                 if (!cancelled) setError(err.message || "Unknown Error")
             } finally {
                 if (!cancelled) setLoading(false);
             }
         }
-
-        fetchUsers();
+        fetchApi();
 
         return () => {
             cancelled = true;
         };
     }, []);
+
+    const handleDelete = async (id) => {
+        try{
+            await fetch(`${API}/${id}`, {
+            method: "DELETE"
+        });
+
+        setUsers((prev) => prev.filter((u) => u.id !== id));
+
+        }catch(err){
+            console.log("Delete Error", err);
+        } 
+    };
 
     if (loading) return <h2>Loading users...</h2>
     if (error) return <p>Error: {error}</p>
@@ -45,12 +53,13 @@ const AddUser1 = () => {
 
     return (
         <div>
-            <h2>Users</h2>
+            <h1>Add User</h1>
             <ul>
                 {
-                    users.map(user => {
+                    users.map((user) => {
                         return <li key={user.id ?? user._id}>
-                            <strong>{user.name}</strong> - {user.age} - {user.email}
+                            Name: {user.name} - Age: {user.age} - Email: {user.email}
+                            <button onClick={()=> handleDelete(user.id)}>Delete</button>
                         </li>
                     })
                 }
@@ -59,4 +68,4 @@ const AddUser1 = () => {
     )
 }
 
-export default AddUser1
+export default AddUser1;

@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SendUser1 = () => {
-
-    const [name, setName] = useState("");
-    const [age, setAge] = useState("");
+    const [name, setName] = useState('');
+    const [age, setAge] = useState('');
 
     const API = "http://localhost:5000/users";
+    const navigate = useNavigate();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -13,28 +14,35 @@ const SendUser1 = () => {
         const res = await fetch(API, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, age })
+            body: JSON.stringify({name, age})
         });
-
         const data = await res.json();
         console.log(data);
+        
+        setName("");
+        setAge("");
+    
+        navigate("/SendUser1");
     }
 
     return (
         <div>
-            <h1>Send User Data</h1>
+            <h1>User Data</h1>
             <form onSubmit={handleSubmit}>
                 <input
-                    type="text"
-                    placeholder="Name"
+                    type='text'
+                    placeholder='Name'
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => { setName(e.target.value) }}
+                    required
                 />
+
                 <input
-                    type="number"
-                    placeholder="Age"
+                    type='number'
+                    placeholder='Age'
                     value={age}
-                    onChange={(e) => setAge(e.target.value)}
+                    onChange={(e) => { setAge(e.target.value) }}
+                    required
                 />
                 <button type="submit">Submit</button>
             </form>
